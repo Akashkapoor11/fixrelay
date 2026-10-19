@@ -1,6 +1,4 @@
-# FixRelay — Evidence-Grounded Home Repair Agent
-
-**Hackathon target:** Amazon Developer Hackathon · Alexa+ primary track · AWS Builder mini-challenge · optional Open Source mini-challenge via MCP Sentinel
+# FixRelay - Evidence-Grounded Home Repair Agent
 
 FixRelay helps a household move from an ambiguous device issue to a safer, evidence-backed next step. It brings device context, source-labelled manual excerpts, transparent warranty date arithmetic, illustrative service options, approval-gated local repair cases, and a real MCP interface into one coherent workflow.
 
