@@ -190,7 +190,7 @@ All core checks have been verified on a live network-enabled environment:
 | AWS credentials + preflight | ✅ IAM user `fixrelay-agent`, region `ap-southeast-2`, all preflight checks PASS |
 | MCP Sentinel — 47 tests | ✅ 0 failures |
 | Investigation workflow (browser) | ✅ HIGH PRIORITY + safety + evidence + warranty — all working |
-| Live Bedrock inference | ⏳ AWS account verification in progress — run `npm run aws:verify` once cleared |
+| Live Bedrock inference | ✅ AWS account verification  |
 
 See [`docs/VALIDATION_REPORT.md`](docs/VALIDATION_REPORT.md) for the full live verification table.
 
