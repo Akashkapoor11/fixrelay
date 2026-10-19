@@ -1,0 +1,15 @@
+node_modules/
+dist/
+coverage/
+.vite/
+.env
+.env.*.local
+!.env.example
+*.log
+.DS_Store
+*.swp
+*.tmp
+playwright-report/
+test-results/
+open-source/MCP-Sentinel/node_modules/
+open-source/MCP-Sentinel/dist/

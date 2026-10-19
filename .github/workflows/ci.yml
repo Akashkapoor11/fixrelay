@@ -1,0 +1,60 @@
+name: FixRelay CI
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: fixrelay
+          POSTGRES_USER: fixrelay
+          POSTGRES_PASSWORD: fixrelay_ci_only
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U fixrelay -d fixrelay"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 15
+    env:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://fixrelay:fixrelay_ci_only@localhost:5432/fixrelay
+      PGSSL: "false"
+      AI_PROVIDER: demo
+      HOST: 127.0.0.1
+      PORT: 8000
+      ALLOWED_HOSTS: "localhost,127.0.0.1,[::1]"
+      ALLOWED_ORIGINS: "http://localhost:8000,http://127.0.0.1:8000,http://localhost:5173,http://127.0.0.1:5173"
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
+      # A committed package-lock.json makes installs reproducible. This fallback
+      # keeps the source-check workflow usable until the first networked install
+      # generates and commits that lockfile.
+      - name: Install root dependencies
+        run: if [ -f package-lock.json ]; then npm ci; else npm install; fi
+      - name: Typecheck client, server and tests
+        run: npm run typecheck
+      - name: Run unit, integration and MCP Sentinel tests
+        run: npm test
+      - name: Build production client and server
+        run: npm run build
+      - name: Check MCP Sentinel standalone package
+        working-directory: open-source/MCP-Sentinel
+        run: if [ -f package-lock.json ]; then npm ci; else npm install; fi && npm run build && npm test

@@ -1,0 +1,42 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: fixrelay
+      POSTGRES_USER: fixrelay
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fixrelay_dev_only}
+    ports:
+      - "127.0.0.1:5433:5432"
+    volumes:
+      - fixrelay_postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fixrelay -d fixrelay"]
+      interval: 5s
+      timeout: 5s
+      retries: 15
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 8000
+      DATABASE_URL: postgresql://fixrelay:${POSTGRES_PASSWORD:-fixrelay_dev_only}@postgres:5432/fixrelay
+      PGSSL: "false"
+      AI_PROVIDER: ${AI_PROVIDER:-demo}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+      BEDROCK_MODEL_ID: ${BEDROCK_MODEL_ID:-}
+      MCP_PUBLIC_URL: http://app:8000/mcp
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS_DOCKER:-http://localhost:8000,http://127.0.0.1:8000}
+      ALLOWED_HOSTS: "${ALLOWED_HOSTS_DOCKER:-localhost,127.0.0.1,[::1]}"
+      APPROVAL_TTL_SECONDS: ${APPROVAL_TTL_SECONDS:-180}
+    ports:
+      - "127.0.0.1:8000:8000"
+
+volumes:
+  fixrelay_postgres:

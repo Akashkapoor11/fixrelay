@@ -1,0 +1,62 @@
+{
+  "name": "fixrelay-evidence-grounded-repair-agent",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "description": "An evidence-grounded home repair agent with a React UI, Node.js/TypeScript API, PostgreSQL persistence, MCP Streamable HTTP, and optional Amazon Bedrock + Strands integration.",
+  "engines": {
+    "node": ">=22.0.0",
+    "npm": ">=10.0.0"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n API,WEB -c blue,green \"npm:dev:server\" \"npm:dev:client\"",
+    "dev:server": "tsx watch backend/src/index.ts",
+    "dev:client": "vite --config frontend/vite.config.ts --host 0.0.0.0",
+    "build": "npm run typecheck && vite build --config frontend/vite.config.ts && tsc -p backend/tsconfig.json",
+    "start": "node dist/backend/index.js",
+    "typecheck": "tsc -p frontend/tsconfig.json --noEmit && tsc -p backend/tsconfig.json --noEmit && tsc -p backend/tsconfig.tests.json --noEmit && tsc -p backend/tsconfig.tools.json --noEmit && tsc -p open-source/MCP-Sentinel/tsconfig.json --noEmit",
+    "test": "vitest run --config vitest.config.ts && npm run test:sentinel",
+    "test:sentinel": "tsx --test open-source/MCP-Sentinel/tests/*.test.ts",
+    "test:watch": "vitest --config vitest.config.ts",
+    "test:coverage": "vitest run --config vitest.config.ts --coverage",
+    "mcp:sentinel": "tsx open-source/MCP-Sentinel/src/cli.ts",
+    "aws:preflight": "tsx backend/scripts/verify-aws.ts",
+    "aws:verify": "tsx backend/scripts/verify-aws.ts --execute",
+    "db:init": "tsx backend/src/db/migrate.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/client": "^2.0.0",
+    "@modelcontextprotocol/node": "^2.0.0",
+    "@modelcontextprotocol/server": "^2.0.0",
+    "@strands-agents/sdk": "^1.20.0",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "helmet": "^8.1.0",
+    "lucide-react": "^0.468.0",
+    "pg": "^8.16.3",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.1.14",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/node": "^22.18.6",
+    "@types/pg": "^8.15.5",
+    "@types/react": "^19.1.16",
+    "@types/react-dom": "^19.1.9",
+    "@types/supertest": "^6.0.3",
+    "@vitejs/plugin-react": "^5.0.4",
+    "@vitest/coverage-v8": "^3.2.4",
+    "concurrently": "^9.2.1",
+    "supertest": "^7.1.4",
+    "tailwindcss": "^4.1.14",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vite": "^7.1.9",
+    "vitest": "^3.2.4"
+  }
+}
